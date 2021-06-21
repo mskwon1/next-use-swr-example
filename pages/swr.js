@@ -1,8 +1,9 @@
 import _ from 'lodash';
+import { useState } from 'react';
 import { useUsers, useUser } from '../lib/userHooks';
 
 function DummyUsers() {
-  const { data, error, isValidating } = useUsers();
+  const { data, error } = useUsers();
 
   if (error) {
     return <div>ERROR : { error.toString() }</div>
@@ -24,7 +25,7 @@ function DummyUsers() {
 }
 
 function DummyUser({ userId }) {
-  const { data: user, error, isValidating } = useUser(userId);
+  const { data: user, error } = useUser(userId);
 
   if (error) {
     return <div>Error: { error.toString() }</div>
@@ -41,8 +42,46 @@ function DummyUser({ userId }) {
   )
 }
 
+function UserInput() {
+  const { mutate } = useUsers();
+
+  const [name, setName] = useState('');
+  const [age, setAge] = useState(0);
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    await fetch('/api/users', {
+      method: 'POST',
+      body: JSON.stringify({name, age}),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    setName('');
+    setAge(0);
+    mutate();
+  }
+
+  return (
+    <form>
+      <div>
+        <label>이름</label>
+        <input type="text" name="name" value={name} onChange={event => setName(event.target.value)}  />
+      </div>
+      <div>
+        <label>나이</label>
+        <input type="number" name="age" value={age} onChange={event => setAge(event.target.value)} />
+      </div>
+      <button type="button" onClick={onSubmit}>등록</button>
+    </form>
+  )
+}
+
 export default function SWR() {
-  const userIds = [1,2,3,4];
+  const { data: users } = useUsers();
+
+  const userIds = _.range(1, _.size(users) + 1);
   const dummyUserList = _.map(userIds, userId => {
     return <DummyUser key={userId} userId={userId} />
   });
@@ -54,10 +93,16 @@ export default function SWR() {
   return (
     <div>
       <DummyUsers />
+      <hr />
       <DummyUsers />
+      <hr />
       <DummyUsers />
+      <hr />
       {dummyUserList}
+      <hr />
       {dummyUserList2}
+      <hr />
+      <UserInput />
     </div>
   )
 }
