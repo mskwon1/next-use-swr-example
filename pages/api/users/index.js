@@ -11,7 +11,15 @@ export default async function handler(req, res) {
     return res.status(200).json(newUser);
   }
 
-  const users = await loadUsers();
+  let users = await loadUsers();
+
+  const ageGtFilter = _.toNumber(req.query.age_gt);
+  if (ageGtFilter) {
+    users = _.filter(users, user => {
+      return user.age > ageGtFilter;
+    });
+  }
+
   return res.status(200).json(users);
 }
 

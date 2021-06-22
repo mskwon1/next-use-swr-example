@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import { useState } from 'react';
+import { mutate } from 'swr';
 import { useUsers, useUser } from '../lib/userHooks';
 
-function DummyUsers() {
-  const { data, error } = useUsers();
+function DummyUsers({ query }) {
+  const { data, error } = useUsers(query);
 
   if (error) {
     return <div>ERROR : { error.toString() }</div>
@@ -43,7 +44,7 @@ function DummyUser({ userId }) {
 }
 
 function UserInput() {
-  const { mutate } = useUsers();
+  const { getCacheKeys } = useUsers();
 
   const [name, setName] = useState('');
   const [age, setAge] = useState(0);
@@ -60,7 +61,9 @@ function UserInput() {
 
     setName('');
     setAge(0);
-    mutate();
+
+    const mutateKeys = getCacheKeys();
+    _.map(mutateKeys, key => mutate(key));
   }
 
   return (
@@ -90,9 +93,13 @@ export default function SWR() {
     return <DummyUser key={`${userId}-2`} userId={userId} />
   });
 
+  const usersQueryParams = {
+    age_gt: 26
+  }
+
   return (
     <div>
-      <DummyUsers />
+      <DummyUsers query={usersQueryParams}/>
       <hr />
       <DummyUsers />
       <hr />
