@@ -44,7 +44,7 @@ function DummyUser({ userId }) {
 }
 
 function UserInput() {
-  const { getCacheKeys } = useUsers();
+  const { mutateAll } = useUsers();
 
   const [name, setName] = useState('');
   const [age, setAge] = useState(0);
@@ -61,9 +61,7 @@ function UserInput() {
 
     setName('');
     setAge(0);
-
-    const mutateKeys = getCacheKeys();
-    _.map(mutateKeys, key => mutate(key));
+    mutateAll();
   }
 
   return (
@@ -105,10 +103,10 @@ export default function SWR() {
       <hr />
       <DummyUsers />
       <hr />
-      {dummyUserList}
-      <hr />
-      {dummyUserList2}
-      <hr />
+      {/*{dummyUserList}*/}
+      {/*<hr />*/}
+      {/*{dummyUserList2}*/}
+      {/*<hr />*/}
       <UserInput />
     </div>
   )
