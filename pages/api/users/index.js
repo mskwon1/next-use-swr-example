@@ -20,6 +20,13 @@ export default async function handler(req, res) {
     });
   }
 
+  const ageLteFilter = _.toNumber(req.query.age_lte);
+  if (ageLteFilter) {
+    users = _.filter(users, user => {
+      return user.age <= ageLteFilter
+    })
+  }
+
   return res.status(200).json(users);
 }
 

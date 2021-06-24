@@ -19,9 +19,12 @@ function DummyUsers({ query }) {
   });
 
   return (
-    <ul>
-      {users}
-    </ul>
+    <div>
+      {query ? <p>query: {JSON.stringify(query)}</p> : ''}
+      <ul>
+        {users}
+      </ul>
+    </div>
   )
 }
 
@@ -91,15 +94,11 @@ export default function SWR() {
     return <DummyUser key={`${userId}-2`} userId={userId} />
   });
 
-  const usersQueryParams = {
-    age_gt: 26
-  }
-
   return (
     <div>
-      <DummyUsers query={usersQueryParams}/>
+      <DummyUsers query={{age_gt: 26}}/>
       <hr />
-      <DummyUsers />
+      <DummyUsers query={{age_lte: 26}}/>
       <hr />
       <DummyUsers />
       <hr />
